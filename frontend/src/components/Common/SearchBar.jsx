@@ -1,11 +1,16 @@
 // import { format } from 'express/lib/response';
 import React, { useState } from 'react'
 import { HiMagnifyingGlass, HiMiniXMark } from 'react-icons/hi2';
+import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { fetchProductsByFilters, setFilters } from '../../redux/slices/productsSlice';
 
 const SearchBar = () => {
 
     const [searchTerm, setSearchTerm] = useState('');
     const [isOpen, setIsOpen] = useState(false); 
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
     
     const handleSearchToggle = () => {
         setIsOpen(!isOpen);
@@ -13,10 +18,9 @@ const SearchBar = () => {
 
     const handleSearch = (e) => {
         e.preventDefault();
-        // Handle search logic here, e.g., redirect to search results page
-        console.log("Searching for:", searchTerm);
-        // Reset search term after submission
-        // setSearchTerm('');
+        dispatch(setFilters({search: searchTerm}));
+        dispatch(fetchProductsByFilters({search: searchTerm}));
+        navigate(`/collections/all?search=${searchTerm}`);
         setIsOpen(false);
     }
 

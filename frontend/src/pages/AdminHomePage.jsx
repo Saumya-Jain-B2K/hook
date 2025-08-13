@@ -1,89 +1,51 @@
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux"
 import { Link } from "react-router-dom"
+import { fetchAdminProducts } from "../redux/slices/adminProductSlice";
+import { fetchAllOrders } from "../redux/slices/adminOrderSlice";
 
 const AdminHomePage = () => {
-    const orders =[
-        {
-            _id: 12542,
-            user: {
-                name: "Jhon Doe",
-            },
-            totalPrice: 200,
-            status: "Processing",
-        },
-        {
-            _id: 12442,
-            user: {
-                name: "Rom Doe",
-            },
-            totalPrice: 100,
-            status: "Processing",
-        },
-        {
-            _id: 12552,
-            user: {
-                name: "Rohan Doe",
-            },
-            totalPrice: 150,
-            status: "Processing",
-        },
-        {
-            _id: 12543,
-            user: {
-                name: "Jhon",
-            },
-            totalPrice: 300,
-            status: "Processing",
-        },
-        {
-            _id: 12547,
-            user: {
-                name: "Joey",
-            },
-            totalPrice: 250,
-            status: "Processing",
-        },
-        {
-            _id: 12562,
-            user: {
-                name: "Jhonny",
-            },
-            totalPrice: 260,
-            status: "Processing",
-        },
-        {
-            _id: 1242,
-            user: {
-                name: "Jhon Doe",
-            },
-            totalPrice: 200,
-            status: "Processing",
-        },
-        {
-            _id: 12542,
-            user: {
-                name: "Jhon Doe",
-            },
-            totalPrice: 200,
-            status: "Processing",
-        },
-    ];
+    const dispatch = useDispatch();
+    const {
+        products,
+        loading: productsLoading,
+        error: productsError,
+    } = useSelector((state) => state.adminProducts);
+    const {
+        orders, 
+        totalOrders, 
+        totalSales, 
+        loading: orderLoading, 
+        error: ordersError
+    } = useSelector((state) => state.adminOrders);
 
+    useEffect(() => {
+        dispatch(fetchAdminProducts());
+        dispatch(fetchAllOrders());
+    }), [dispatch];
 
   return (
     <div className="max-w-7xl mx-auto p-6">
        <h1 className="text-3xl font-bold mb-6">Admin Dashboard</h1>
+       {productsLoading || orderLoading ? (
+        <p>Loading...</p>
+       ) : productsError ? (
+        <p className="text-red-500">Error fetching products: {productsError}</p>
+       ) : ordersError ? (
+        <p className="text-red-500">Error fetching orders: {ordersError}</p>
+       ) :(
        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
 
         {/* revenue */}
         <div className="p-4 shadow-md rounded-lg">
             <h2 className="text-xl font-semibold">Revenue</h2>
-            <p className="text-2xl">$10000</p>
+            <p className="text-2xl">${totalSales.toFixed(2)}</p>
         </div>
 
         {/* total orders */}
         <div className="p-4 shadow-md rounded-lg">
             <h2 className="text-xl font-semibold">Total Orders</h2>
-            <p className="text-2xl">200</p>
+            <p className="text-2xl">{totalOrders}</p>
             <Link to="/admin/orders" className="text-blue-500 hover:underline">
                 Manage Orders
             </Link>
@@ -92,12 +54,13 @@ const AdminHomePage = () => {
         {/* total products */}
         <div className="p-4 shadow-md rounded-lg">
             <h2 className="text-xl font-semibold">Total Products</h2>
-            <p className="text-2xl">100</p>
+            <p className="text-2xl">{products.length}</p>
             <Link to="/admin/products" className="text-blue-500 hover:underline">
                 Manage Products
             </Link>
         </div>
        </div>
+    )}
        <div className="mt-6">
         <h2 className="text-2xl font-bold mb-4">Recent Orders</h2>
         <div className="overflow-x-auto">
@@ -118,7 +81,7 @@ const AdminHomePage = () => {
                             className="border-b hover:bg-gray-50 cursor-pointer">
                                 <td className="p-4">{order._id}</td>
                                 <td className="p-4">{order.user.name}</td>
-                                <td className="p-4">{order.totalPrice}</td>
+                                <td className="p-4">{order.totalPrice.toFixed(2)}</td>
                                 <td className="p-4">{order.status}</td>
                             </tr>
                         ))

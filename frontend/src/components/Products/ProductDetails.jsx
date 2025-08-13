@@ -1,97 +1,35 @@
-import { set } from 'mongoose';
 import React, { useEffect } from 'react';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import ProductGrid from './ProductGrid';
+import { useParams } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchProductDetails, fetchSimilarProducts } from '../../redux/slices/productsSlice';
+import { addToCart } from '../../redux/slices/cartSlice';
 
-//product data
-const selectedProduct = {
-    name: 'Stylish Jacket',
-    price: 150,
-    originalPrice: 200,
-    description: 'A stylish jacket perfect for all occasions.',
-    brand: 'Fashion Brand',
-    material: 'Cotton Blend',
-    size:["S", "M", "L", "XL"],
-    colors: ["Red", "Blue", "Black"],
-    images: [
-        {
-            url: "https://picsum.photos/500/500?random=1",
-            altText: "Stylish Jacket Image"
-        },
-        {
-            url: "https://picsum.photos/500/500?random=2",
-            altText: "Stylish Jacket Image 2"
-        },
-    ]
-};
 
-//product grid data
-const similarProducts = [
-    {
-        _id: 1,
-        name: "Product 1",
-        price: 300,
-        images: [{ url: "https://picsum.photos/500/500?random=1"}],
-    },
-
-    {
-        _id: 2,
-        name: "Product 2",
-        price: 300,
-        images: [{ url: "https://picsum.photos/500/500?random=2"}],
-    },
-
-    {
-        _id: 3,
-        name: "Product 3",
-        price: 300,
-        images: [{ url: "https://picsum.photos/500/500?random=3"}],
-    },
-
-    {
-        _id: 4,
-        name: "Product 4",
-        price: 300,
-        images: [{ url: "https://picsum.photos/500/500?random=4"}],
-    },
-
-    {
-        _id: 5,
-        name: "Product 5",
-        price: 300,
-        images: [{ url: "https://picsum.photos/500/500?random=11"}],
-    },
-
-    {
-        _id: 6,
-        name: "Product 6",
-        price: 300,
-        images: [{ url: "https://picsum.photos/500/500?random=6"}],
-    },
-
-    {
-        _id: 7,
-        name: "Product 7",
-        price: 300,
-        images: [{ url: "https://picsum.photos/500/500?random=11"}],
-    },
-
-    {
-        _id: 8,
-        name: "Product 8",
-        price: 300,
-        images: [{ url: "https://picsum.photos/500/500?random=21"}],
-    },
-]
-
-const ProductDetails = () => {
+const ProductDetails = ({ productId }) => {
+    const { id } = useParams();
+    const dispatch = useDispatch();
+    const {selectedProduct, loading, error, similarProducts} = useSelector(
+        (state) => state.products
+    );
+    const {user, guestId} = useSelector((state) => state.auth);
     //function to handle the main image
     const [mainImage, setMainImage] = useState("");
     const [selectedSize, setSelectedSize] = useState("");
     const [selectedColor, setSelectedColor] = useState("");
     const [quantity, setQuantity] = useState(1);
     const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+
+    const productFetchId = productId || id;
+
+    useEffect(() => {
+        if (productFetchId) {
+            dispatch(fetchProductDetails(productFetchId));
+            dispatch(fetchSimilarProducts({id: productFetchId}));
+        }
+    }, [dispatch, productFetchId])
 
     //implementinh handleQuantityChange function
     const handleQuantityChange = (action) => {
@@ -111,32 +49,52 @@ const ProductDetails = () => {
         setIsButtonDisabled(true);
         
 
-        setTimeout(() => {
-            toast.success("Product added to cart", {
+        dispatch(
+            addToCart({
+                productId: productFetchId,
+                quantity,
+                size: selectedSize,
+                color: selectedColor,
+                guestId,
+                userId: user?._id,
+            })
+        )
+         .then(() => {
+            toast.success("Product added to cart!", {
                 duration: 1000,
             });
-
+         })   
+         .finally(() => {
             setIsButtonDisabled(false);
-        }, 500);
-            
-    }
+         });
+    };
     
     
-    //creating a useEffect function for such tha othe image can be selected
+    //creating a useEffect function for such tha other image can be selected
     useEffect(() => {
         if(selectedProduct?.images?.length > 0) {
             setMainImage(selectedProduct.images[0].url);
         }
     }, [selectedProduct]);
 
+    //check loading and error
+    if (loading) {
+        return <p>Loading...</p>
+    }
+
+    if (error) {
+        return <p>Error: {error}</p>
+    }
+
 
   return (
     <div className='p-6'>
+        {selectedProduct && (
       <div className='max-w-6xl mx-auto bg-white p-8 rounded-lg'>
         <div className='flex flex-col md:flex-row'>
             {/* Left Thumbnails */}
             <div className='hidden md:flex flex-col space-y-4 mr-6'>
-                {selectedProduct.images.map((image, index) => (
+                {selectedProduct?.images?.map((image, index) => (
                     <img 
                     key={index} 
                     src={image.url} 
@@ -159,7 +117,7 @@ const ProductDetails = () => {
             </div>
             {/* Mobile Thumbnail */}
             <div className='md:hidden flex overscroll-x-scroll space-x-4 mb-4'>
-                {selectedProduct.images.map((image, index) => (
+                {selectedProduct?.images?.map((image, index) => (
                     <img 
                     key={index} 
                     src={image.url} 
@@ -196,7 +154,7 @@ const ProductDetails = () => {
                 <div className='mb-4'>
                     <p className='text-gray-700'>Color:</p>
                     <div className='flex gap-2 mt-2'>
-                        {selectedProduct.colors.map((color) => (
+                        {selectedProduct?.colors?.map((color) => (
                             <button 
                                 key={color} 
                                 onClick={() => setSelectedColor(color)}
@@ -219,7 +177,7 @@ const ProductDetails = () => {
                 <div className='mb-4'>
                     <p className='text-gray-700 '>Size:</p>
                     <div className='flex gap-2 mt-2'>
-                        {selectedProduct.size.map((size) => (
+                        {selectedProduct?.sizes?.map((size) => (
                             <button 
                                 key={size} 
                                 onClick={() => setSelectedSize(size)}
@@ -298,9 +256,14 @@ const ProductDetails = () => {
             <h2 className='text-2xl text-center font-medium mb-4'>
                 You May Also Like
             </h2>
-            <ProductGrid products={similarProducts}/>
+            <ProductGrid 
+            products={similarProducts}
+            loading={loading}
+            error={error}
+            />
         </div>
       </div>
+      )}
 
     </div>
   )
