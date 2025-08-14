@@ -67,7 +67,7 @@ const FeaturesSection = () => {
           </h4>
           {/* Description */}
           <p className='text-gray-600 text-sm sm:text-base tracking-tight'>
-            On all orders over $100.00
+            On all orders over ₹100.00
           </p>
         </div>
 

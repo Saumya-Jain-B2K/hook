@@ -409,13 +409,13 @@ const ProductDetails = ({ productId }) => {
                             {/* Original Price (Strikethrough) */}
                             {selectedProduct.originalPrice && (
                                 <p className="text-lg text-gray-600 mb-1 line-through">
-                                    ${selectedProduct.originalPrice}
+                                    ₹{selectedProduct.originalPrice}
                                 </p>
                             )}
 
                             {/* Current Price */}
                             <p className="text-xl text-gray-800 mb-2">
-                                ${selectedProduct.price}
+                                ₹{selectedProduct.price}
                             </p>
 
                             {/* Description */}

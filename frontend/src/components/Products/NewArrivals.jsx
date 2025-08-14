@@ -303,7 +303,7 @@ const NewArrivals = () => {
                   {product.name}
                 </h4>
                 <p className="mt-1 text-sm sm:text-base">
-                  ${product.price}
+                  ₹{product.price}
                 </p>
               </Link>
             </div>
