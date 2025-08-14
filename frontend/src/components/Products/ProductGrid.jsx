@@ -77,7 +77,7 @@ const ProductGrid = ({ products, loading, error }) => {
 
             {/* Product price */}
             <p className="text-gray-500 font-medium text-sm sm:text-base tracking-tight">
-              ${product.price}
+              ₹{product.price}
             </p>
           </div>
         </Link>

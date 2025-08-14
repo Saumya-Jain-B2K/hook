@@ -253,7 +253,7 @@ const OrderDetails = () => {
 
                     {/* Unit Price */}
                     <td className="py-2 px-4 text-sm sm:text-base">
-                      ${item.price}
+                      ₹{item.price}
                     </td>
 
                     {/* Quantity */}
@@ -263,7 +263,7 @@ const OrderDetails = () => {
 
                     {/* Total Price */}
                     <td className="py-2 px-4 text-sm sm:text-base">
-                      ${(item.price * item.quantity).toFixed(2)}
+                      ₹{(item.price * item.quantity).toFixed(2)}
                     </td>
                   </tr>
                 ))}

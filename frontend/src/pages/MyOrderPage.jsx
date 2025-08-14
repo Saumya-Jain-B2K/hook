@@ -198,7 +198,7 @@ const MyOrderPage = () => {
 
                   {/* Total Price */}
                   <td className="py-2 px-3 sm:py-4 sm:px-4">
-                    ${order.totalPrice}
+                    ₹{order.totalPrice}
                   </td>
 
                   {/* Payment Status */}

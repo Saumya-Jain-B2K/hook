@@ -190,7 +190,7 @@ const CartContent = ({ cart, userId, guestId }) => {
                     {/* Price & Delete Button */}
                     <div className="flex flex-col items-center sm:items-end mt-4 sm:mt-0 w-full sm:w-auto">
                         <p className="font-semibold text-gray-700">
-                            ${product.price.toLocaleString()}
+                            ₹{product.price.toLocaleString()}
                         </p>
                         <button
                             onClick={() =>
